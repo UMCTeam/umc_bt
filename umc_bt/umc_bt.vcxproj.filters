@@ -19,7 +19,18 @@
       <Extensions>qrc;*</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
-    <Filter Include="Generated Files">
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+    <Filter Include="Source Files\UICtrl">
+      <UniqueIdentifier>{2d85b776-0a4e-41d3-bf70-21263f5f6224}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UICtrl">
+      <UniqueIdentifier>{6c873ddf-67b3-4000-99a1-cf4e965da921}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Form Files\Generated Files">
       <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
       <Extensions>moc;h;cpp</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
@@ -32,10 +43,26 @@
     <ClCompile Include="bencoding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="umc_window.cpp">
+      <Filter>Source Files\UICtrl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bencoding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_umc_window.h">
+      <Filter>Form Files\Generated Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="umc_window.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="umc_window.h">
+      <Filter>Header Files\UICtrl</Filter>
+    </QtMoc>
   </ItemGroup>
 </Project>
