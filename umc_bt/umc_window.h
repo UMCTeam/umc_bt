@@ -10,6 +10,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <assert.h>
 
 #include "ui_umc_window.h"
 #include "bencoding.h"

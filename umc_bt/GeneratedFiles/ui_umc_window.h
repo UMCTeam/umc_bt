@@ -40,7 +40,17 @@ public:
             umc_window->setObjectName(QStringLiteral("umc_window"));
         umc_window->setWindowModality(Qt::ApplicationModal);
         umc_window->setEnabled(true);
-        umc_window->resize(400, 296);
+        umc_window->resize(400, 300);
+        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(umc_window->sizePolicy().hasHeightForWidth());
+        umc_window->setSizePolicy(sizePolicy);
+        umc_window->setMinimumSize(QSize(400, 300));
+        umc_window->setMaximumSize(QSize(400, 300));
+        umc_window->setStyleSheet(QLatin1String("QFrame#frame {\n"
+"	border: 1px solid #666;\n"
+"}"));
         verticalLayout = new QVBoxLayout(umc_window);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
@@ -82,7 +92,7 @@ public:
 
     void retranslateUi(QWidget *umc_window)
     {
-        umc_window->setWindowTitle(QApplication::translate("umc_window", "umc_window", Q_NULLPTR));
+        umc_window->setWindowTitle(QApplication::translate("umc_window", "\347\247\215\345\255\220\350\247\243\346\236\220\345\267\245\345\205\267", Q_NULLPTR));
         btnOpen->setText(QApplication::translate("umc_window", "\346\211\223\345\274\200\347\247\215\345\255\220", Q_NULLPTR));
     } // retranslateUi
 

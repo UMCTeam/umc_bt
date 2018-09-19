@@ -20,16 +20,13 @@ BElement* UMCWindow::PaserBElement(const QString& path)
 	QFileInfo fileInfo(path);
 	BElement* metaInfo = NULL;
 
-	try {
-		BElement::Parse(path.toStdString().c_str(), &metaInfo);
-	}
-	catch (std::exception e) {
-		//TODO:异常
-	}
+	BElement::Parse(path.toStdString().c_str(), &metaInfo);
 
+	//解析失败，直接断言
+	assert(metaInfo == NULL);
 
-	std::function<void (const QString& key, const BElement*, QTreeWidgetItem*)> GetMetaString;
-	GetMetaString = [=, &GetMetaString](const QString& key, const BElement* element, QTreeWidgetItem* root) -> void {
+	std::function<void (const QString& key, const BElement*, QTreeWidgetItem*)> CreateMetaTree;
+	CreateMetaTree = [=, &CreateMetaTree](const QString& key, const BElement* element, QTreeWidgetItem* root) -> void {
 
 		switch (element->m_eType)
 		{
@@ -53,7 +50,7 @@ BElement* UMCWindow::PaserBElement(const QString& path)
 			for (iter = m_list.begin(); iter != m_list.end(); iter++)
 			{
 				QTreeWidgetItem* subItem = new QTreeWidgetItem(root);
-				GetMetaString(QString(index), *iter, subItem);
+				CreateMetaTree(QString(index), *iter, subItem);
 				
 				index++;
 			}
@@ -69,7 +66,7 @@ BElement* UMCWindow::PaserBElement(const QString& path)
 				const QString key = QString::fromUtf8(iter->first->m_str);
 				QTreeWidgetItem* subItem = new QTreeWidgetItem(root, QStringList(key));
 
-				GetMetaString(key, iter->second, subItem);
+				CreateMetaTree(key, iter->second, subItem);
 			}
 			break;
 		}
@@ -83,7 +80,7 @@ BElement* UMCWindow::PaserBElement(const QString& path)
 	ui.treeWidget->addTopLevelItem(item);
 
 	//开始解析
-	GetMetaString(fileInfo.fileName(), metaInfo, item);
+	CreateMetaTree(fileInfo.fileName(), metaInfo, item);
 
 	return metaInfo;
 }
