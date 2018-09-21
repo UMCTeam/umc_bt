@@ -1,7 +1,6 @@
 #include <QtWidgets/QApplication>
 #include <string>
 
-
 #include "bencoding.h"
 #include "umc_window.h"
 

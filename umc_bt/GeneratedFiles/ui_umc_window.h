@@ -46,8 +46,6 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(umc_window->sizePolicy().hasHeightForWidth());
         umc_window->setSizePolicy(sizePolicy);
-        umc_window->setMinimumSize(QSize(400, 300));
-        umc_window->setMaximumSize(QSize(400, 300));
         umc_window->setStyleSheet(QLatin1String("QFrame#frame {\n"
 "	border: 1px solid #666;\n"
 "}"));

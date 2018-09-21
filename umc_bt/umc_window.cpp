@@ -6,83 +6,92 @@ UMCWindow::UMCWindow(QWidget *parent)
 	ui.setupUi(this);
 
 	QObject::connect(ui.btnOpen, &QPushButton::clicked, this, &UMCWindow::OpenFile);
-	
+
+	ui.treeWidget->setHeaderHidden(true);
 }
 
 UMCWindow::~UMCWindow()
 {
 }
 
+
+
 BElement* UMCWindow::PaserBElement(const QString& path)
 {
-	ui.treeWidget->clear();
-
-	QFileInfo fileInfo(path);
-	BElement* metaInfo = NULL;
-
-	BElement::Parse(path.toStdString().c_str(), &metaInfo);
+	BElement* root_data = NULL;
+	BElement::Parse(path.toStdString().c_str(), &root_data);
 
 	//解析失败，直接断言
-	assert(metaInfo == NULL);
+	assert(root_data != NULL);
 
-	std::function<void (const QString& key, const BElement*, QTreeWidgetItem*)> CreateMetaTree;
-	CreateMetaTree = [=, &CreateMetaTree](const QString& key, const BElement* element, QTreeWidgetItem* root) -> void {
+	return root_data;
+}
 
-		switch (element->m_eType)
+void  UMCWindow::CreateTreeWidgetItem(BElement* data_ptr, QTreeWidgetItem* root)
+{
+	switch (data_ptr->m_eType)
+	{
+	case eElementType::e_elem_int:
+	{
+		BElementInt* int_ptr = (BElementInt*)data_ptr;
+		root->addChild(new QTreeWidgetItem(QStringList(QString::number(int_ptr->m_n))));
+		break;
+	}
+	case eElementType::e_elem_string:
+	{
+		BElementString* string_ptr = (BElementString*)data_ptr;
+		root->addChild(new QTreeWidgetItem(QStringList(QString(string_ptr->m_str))));
+		
+		break;
+	}
+	case eElementType::e_elem_list:
+	{
+		std::list<BElement*> m_list = ((BElementList*)data_ptr)->m_list;
+		std::list<BElement*>::iterator iter;
+		QTreeWidgetItem* array = new QTreeWidgetItem();
+		array->setText(0, "array");
+		root->addChild(array);
+
+		for (iter = m_list.begin(); iter != m_list.end(); iter++)
 		{
-		case eElementType::e_elem_int:
-		{
-			root->setText(0, key);
-			break;
+			CreateTreeWidgetItem(*iter, array);
 		}
-		case eElementType::e_elem_string:
+		break;
+	}
+	case eElementType::e_elem_dict:
+	{
+		std::map<BElementString*, BElement*> m_map = ((BElementDict*)data_ptr)->m_dict;
+		std::map<BElementString*, BElement*>::iterator iter;
+
+		for (iter = m_map.begin(); iter != m_map.end(); iter++)
 		{
-			BElementString* b_string = (BElementString*)element;
-			root->setText(0, QString::fromUtf8(b_string->m_str));
-			break;
+			QTreeWidgetItem* subItem= new QTreeWidgetItem();
+
+			subItem->setText(0, QString(iter->first->m_str));
+			CreateTreeWidgetItem(iter->second, subItem);
+			root->addChild(subItem);
 		}
-		case eElementType::e_elem_list:
-		{
-			std::list<BElement*> m_list = ((BElementList*)element)->m_list;
-			std::list<BElement*>::iterator iter;
-			int index = 0;
-
-			for (iter = m_list.begin(); iter != m_list.end(); iter++)
-			{
-				QTreeWidgetItem* subItem = new QTreeWidgetItem(root);
-				CreateMetaTree(QString(index), *iter, subItem);
-				
-				index++;
-			}
-			break;
-		}
-		case eElementType::e_elem_dict:
-		{
-			std::map<BElementString*, BElement*> m_map = ((BElementDict*)element)->m_dict;
-			std::map<BElementString*, BElement*>::iterator iter;
-
-			for (iter = m_map.begin(); iter != m_map.end(); iter++)
-			{
-				const QString key = QString::fromUtf8(iter->first->m_str);
-				QTreeWidgetItem* subItem = new QTreeWidgetItem(root, QStringList(key));
-
-				CreateMetaTree(key, iter->second, subItem);
-			}
-			break;
-		}
-		};
-
-		return;
+		break;
+	}
 	};
 
+	return;
+}
 
-	QTreeWidgetItem* item = new QTreeWidgetItem();
-	ui.treeWidget->addTopLevelItem(item);
+void UMCWindow::CreateTreeWidget(const QString& path)
+{
+	BElement* root_data = PaserBElement(path);
 
-	//开始解析
-	CreateMetaTree(fileInfo.fileName(), metaInfo, item);
+	ui.treeWidget->clear();
 
-	return metaInfo;
+	QTreeWidgetItem* root = new QTreeWidgetItem();
+
+	root->setText(0, "object");
+	CreateTreeWidgetItem(root_data, root);
+
+	ui.treeWidget->addTopLevelItem(root);
+
+	delete root_data;
 }
 
 void UMCWindow::OpenFile()
@@ -97,7 +106,7 @@ void UMCWindow::OpenFile()
 			QString filePath = paths[0];
 
 			ui.editPath->setText(filePath);
-			PaserBElement(filePath);
+			CreateTreeWidget(filePath);
 		}
 	}
 }

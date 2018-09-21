@@ -23,6 +23,8 @@ public:
 	UMCWindow(QWidget *parent = Q_NULLPTR);
 	~UMCWindow();
 	BElement* PaserBElement(const QString& path);
+	void CreateTreeWidgetItem(BElement* data_ptr, QTreeWidgetItem* root);
+	void CreateTreeWidget(const QString& path);
 
 public slots:
 	void OpenFile();
